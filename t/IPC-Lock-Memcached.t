@@ -1,4 +1,4 @@
-use Test::More tests => 6;
+use Test::More tests => 7;
 BEGIN { use_ok('IPC::Lock::Memcached') };
 
 my $object = IPC::Lock::Memcached->new({
@@ -8,6 +8,7 @@ my $object = IPC::Lock::Memcached->new({
 my $key = "$$.testing";
 ok($object && ref $object && ref $object eq 'IPC::Lock::Memcached', 'instantiation');
 ok($object->lock($key), "$key locked");
+ok(!$object->lock($key), "$key still locked");
 ok($object->memcached->get($key), "$key exists in memcached");
 ok($object->unlock, "$key unlocked");
 ok(!$object->memcached->get($key), "$key deleted from memcached");

@@ -6,7 +6,7 @@ use warnings;
 use Is;
 use Time::HiRes qw(gettimeofday);
 
-our $VERSION    = '0.10';
+our $VERSION    = '0.12';
 our @CATCH_SIGS = qw(TERM INT);
 
 ### from File::NFSLock
@@ -106,7 +106,7 @@ __END__
 
 =head1 NAME
 
-IPC::Lock - Perl extension for locking across boxes
+IPC::Lock - simple and safe local/network locking
 
 =head1 SYNOPSIS
 
@@ -116,12 +116,12 @@ IPC::Lock - Perl extension for locking across boxes
   
   Please refer to a child module for their respective usage.
 
-  Generally, you instantiate an $object via new.  The new will contain
+  Generally, you instantiate a $lock object via new.  The new will contain
   connection parameters.
   
   Then call
 
-  $object->lock($key)
+  $lock->lock($key)
 
   where $key is a unique identifier.  The default value set for the lock comes
   from $self->atomic_value, which by default is
@@ -130,12 +130,13 @@ IPC::Lock - Perl extension for locking across boxes
   
   The value can potentially be used for debugging.
   
-  When $object leaves scope,
+  When $lock leaves scope,
 
-  $object->unlock
+  $lock->unlock
 
   gets called.  When called via destroy, unlock will destroy the last 
-  $key that was locked.
+  $key that was locked.  To avoid relying on this magic, call 
+  $lock->unlock explicitly.
 
 =head1 PARAMETERS
 
@@ -147,7 +148,7 @@ IPC::Lock - Perl extension for locking across boxes
 
   So, to instantiate with a ttl of a day, patience of a minute and increment of a second
 
-  my $object = IPC::Lock::Child->new({
+  my $lock = IPC::Lock::Child->new({
       ttl       => 86400,
       patience  => 60,
       increment => 1,

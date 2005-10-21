@@ -48,17 +48,34 @@ IPC::Lock::Memcached - memcached based locking
   use IPC::Lock::Memcached;
   {
       my $lock = IPC::Lock::Memcached->new({
-        memcached_servers => ['localhost:11211'],
+        memcached_servers => ["localhost:11211"],
       });
-      ### following memcached tradition, spaces aren't allow in the key name
+      ### following memcached tradition, spaces are not allowed in the key name
       ### and the user is expected to check such things themselves
-      if($lock->lock('magic_key')) {
+      if($lock->lock("magic_key")) {
+
+        ###
         ### do your thing
+        ###    
+        
+        $lock->unlock;
       }
   }
 
   When $lock leaves scope, $lock->unlock gets called.  When called via
-  destroy, unlock will destroy the last $key that was locked.
+  destroy, unlock will destroy the last $key that was locked.  To avoid
+  relying on this magic, call $lock->unlock explicitly.
+
+=head1 A LITTLE WARNING
+
+  If you are running your Memcached servers right on the edge of memory capacity,
+  IPC::Lock::Memcached might not be for you.  Also, if you lose a memcached server,
+  you will lose your ability to lock.  Probably your $lock->lock method will never
+  return true.  Along similar lines, make sure you write your code tests to make
+  sure you actually got the lock.  Like
+
+  if($lock->lock("coolkey")) {
+  }
 
 =head1 BENCHMARKS
 
@@ -69,10 +86,10 @@ IPC::Lock::Memcached - memcached based locking
   timethese(-5, {
     lock => sub {
       my $lock = IPC::Lock::Memcached->new({
-        memcached_servers => ['localhost:11211'],
+        memcached_servers => ["localhost:11211"],
       });
 
-      if($lock->lock('coolkey')) {
+      if($lock->lock("coolkey")) {
         $lock->unlock;
       }
     }
@@ -84,13 +101,13 @@ IPC::Lock::Memcached - memcached based locking
   Local test with an extant memcached object
 
   my $lock = IPC::Lock::Memcached->new({
-    memcached_servers => ['localhost:11211'],
+    memcached_servers => ["localhost:11211"],
   });
 
   timethese(-5, {
     lock => sub {
 
-      if($lock->lock('coolkey')) {
+      if($lock->lock("coolkey")) {
         $lock->unlock;
       }
     }
@@ -106,6 +123,7 @@ IPC::Lock::Memcached - memcached based locking
 =head1 THANKS
 
 Thanks to Brad Fitzpatrick for Cache::Memcached.  It just works.
+Thanks to Perrin Harkins for a little review and encouraging me to add a warning.
 
 =head1 AUTHOR
 
