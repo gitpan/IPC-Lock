@@ -1,0 +1,5 @@
+Revision history for Perl extension IPC::Lock.
+
+0.10  Thu Oct 20 23:48:27 2005
+	- original version; created by h2xs 1.23 with options
+		-X -n IPC::Lock
