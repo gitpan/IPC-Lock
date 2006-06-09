@@ -3,10 +3,9 @@ package IPC::Lock;
 use strict;
 use warnings;
 
-use Is;
 use Time::HiRes qw(gettimeofday);
 
-our $VERSION    = '0.12';
+our $VERSION    = '0.14';
 our @CATCH_SIGS = qw(TERM INT);
 
 ### from File::NFSLock
