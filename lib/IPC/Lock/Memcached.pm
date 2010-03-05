@@ -28,7 +28,7 @@ sub atomic {
 
 sub unatomic {
   my $self = shift;
-  my $key = $self->{key} || shift;
+  my $key = shift || $self->{key};
   return $self->memcached->delete($key);
 }
 
